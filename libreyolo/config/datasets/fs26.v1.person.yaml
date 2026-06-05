@@ -1,0 +1,6 @@
+path: /home/laptq/laptq_utils/outputs/fs26/helper--convert--detection--json--to--ultralytics-txt
+train: train.txt
+val: val.txt
+
+nc: 1
+names: ["person"]
