@@ -54,3 +54,5 @@ sample_images*/
 *.engine
 *.onnx
 *.torchscript
+
+outputs
