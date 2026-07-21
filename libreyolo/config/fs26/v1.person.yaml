@@ -1,0 +1,13 @@
+path: /home/laptq/libreyolo/data/processed/fs26/detection/yolo_format.sample_1_sec
+train: train.txt
+val: 2cia_25min+aceone+daiso.txt
+# val: cia_long_run_test.txt
+# val: 2cia_25min.txt
+# val: aceone_interesting.txt
+# val: aceone_suspicious.txt
+# val: cia_r9_25min.txt
+# val: cia_shoplifting_25min.txt
+# val: daiso.txt
+
+nc: 1
+names: ["person"]

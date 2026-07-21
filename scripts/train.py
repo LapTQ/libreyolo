@@ -1,14 +1,14 @@
 from libreyolo import LibreYOLO
 
 # Fine-tune from a pretrained checkpoint (recommended)
-model = LibreYOLO("LibreYOLO9s.pt")
+model = LibreYOLO("LibreYOLO9t.pt")
 
 results = model.train(
-    data="libreyolo/config/datasets/fs26.v1.person.yaml",     # path to data.yaml (required)
+    data="libreyolo/config/fs26/v1.person.yaml",     # path to data.yaml (required)
 
     # Schedule
     epochs=100,              # default: 300
-    batch=128,
+    batch=64,
     imgsz=640,
 
     # Optimizer
@@ -16,13 +16,13 @@ results = model.train(
     optimizer="SGD",         # "SGD", "Adam", "AdamW"
 
     # System
-    device="",              # "" | "cpu" | "cuda" | "0" | "0,1"
+    device="3",              # "" | "cpu" | "cuda" | "0" | "0,1"
     workers=8,
     seed=0,
 
     # Output
-    project="outputs/train",
-    name="v1.person.LibreYOLO9s",
+    project="models/checkpoints/fs26/detection/libreyolo",
+    name="v2.person.LibreYOLO9t",
     exist_ok=False,
 
     # Training features

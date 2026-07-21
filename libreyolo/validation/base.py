@@ -87,6 +87,11 @@ class BaseValidator(ABC):
 
         self.save_dir.mkdir(parents=True, exist_ok=True)
 
+        # Ensure model is on the validation device
+        self.model.device = self.device
+        if hasattr(self.model, "model"):
+            self.model.model.to(self.device)
+
         self.dataloader = self._setup_dataloader()
 
         self.seen = 0

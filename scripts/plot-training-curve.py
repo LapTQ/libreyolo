@@ -16,7 +16,6 @@ Usage:
 
 import os
 import csv
-import argparse
 import glob
 import matplotlib.pyplot as plt
 
@@ -199,26 +198,24 @@ def plot_metrics(models_data, output_dir, generate_dashboard=True):
     if generate_dashboard:
         print("  - dashboard.png")
 
-def main():
-    parser = argparse.ArgumentParser(description="Visualize training curves for LibreYOLO results.csv")
-    parser.add_argument('-f', '--files', nargs='*', help="Path to one or more results.csv files.")
-    parser.add_argument('-n', '--names', nargs='*', help="Display names for each run. If omitted, uses folder names.")
-    parser.add_argument('-o', '--output-dir', default='outputs/plots', help="Directory to save the plots.")
-    parser.add_argument('--no-dashboard', action='store_true', help="Do not generate the combined 1x3 dashboard.")
-    
-    args = parser.parse_args()
-    
+def main(files=None, names=None, output_dir='outputs/plots', no_dashboard=False):
     log_files = []
     
     # Auto-find logic if no files are supplied
-    if not args.files:
+    if not files:
         # Check recursively in outputs/
         print("No files specified. Searching recursively for 'results.csv' in outputs/...")
         pattern = os.path.join('outputs', '**', 'results.csv')
         found_files = glob.glob(pattern, recursive=True)
         
         if not found_files:
-            print("No results.csv files found under outputs/. Please specify files using -f.")
+            # Also check in models/checkpoints recursively as a fallback or convenience
+            print("Searching recursively for 'results.csv' in models/...")
+            pattern_models = os.path.join('models', '**', 'results.csv')
+            found_files = glob.glob(pattern_models, recursive=True)
+            
+        if not found_files:
+            print("No results.csv files found. Please specify files directly in main().")
             return
             
         print(f"Found {len(found_files)} run log(s):")
@@ -226,26 +223,32 @@ def main():
             print(f"  - {f}")
         log_files = found_files
     else:
-        log_files = args.files
+        if isinstance(files, str):
+            log_files = [files]
+        else:
+            log_files = files
         
     # Set up names
-    names = []
-    if args.names:
-        names = args.names
+    run_names = []
+    if names:
+        if isinstance(names, str):
+            run_names = [names]
+        else:
+            run_names = names
         # Pad with file names if names list is shorter than files list
-        while len(names) < len(log_files):
+        while len(run_names) < len(log_files):
             # Extract parent directory name as name
-            idx = len(names)
+            idx = len(run_names)
             parent_dir = os.path.basename(os.path.dirname(log_files[idx]))
-            names.append(parent_dir if parent_dir else f"run_{idx}")
+            run_names.append(parent_dir if parent_dir else f"run_{idx}")
     else:
         for f in log_files:
             parent_dir = os.path.basename(os.path.dirname(f))
-            names.append(parent_dir if parent_dir else "LibreYOLO")
+            run_names.append(parent_dir if parent_dir else "LibreYOLO")
             
     # Load all models data
     models_data = {}
-    for csv_file, name in zip(log_files, names):
+    for csv_file, name in zip(log_files, run_names):
         print(f"Loading {name} from {csv_file}...")
         data = parse_results_csv(csv_file)
         if data:
@@ -255,7 +258,11 @@ def main():
         print("Error: No valid training data could be loaded.")
         return
         
-    plot_metrics(models_data, args.output_dir, generate_dashboard=not args.no_dashboard)
+    plot_metrics(models_data, output_dir, generate_dashboard=not no_dashboard)
 
 if __name__ == '__main__':
-    main()
+    main(
+        files=["models/checkpoints/fs26/detection/libreyolo/v6.person.LibreYOLO9t/results.csv"],
+        names=["9t"],
+        output_dir="models/checkpoints/fs26/detection/libreyolo/v6.person.LibreYOLO9t",
+    )

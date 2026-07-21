@@ -1,15 +1,15 @@
 from libreyolo import LibreYOLO
 
 # Fine-tune from a pretrained checkpoint (recommended)
-model = LibreYOLO("outputs/train/v1.person.LibreYOLO9s/weights/best.pt")
+model = LibreYOLO("models/checkpoints/fs26/detection/libreyolo/v6.person.LibreYOLO9t/weights/best.pt", device="1")
 
 results = model.val(
-    data="libreyolo/config/datasets/fs26.v1.person.yaml",  # dataset config
-    batch=32,
+    data="libreyolo/config/fs26/v1.person.yaml",  # dataset config
+    batch=16,
     imgsz=640,
     conf=0.001,  # low conf for mAP calculation
     iou=0.6,  # NMS IoU threshold
-    device="0",
+    # device="1",
     workers=8,
     split="val",  # "val", "test", or "train"
     save_json=False,  # save predictions as COCO JSON

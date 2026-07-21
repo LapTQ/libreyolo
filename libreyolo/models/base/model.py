@@ -163,7 +163,10 @@ class BaseModel(ABC):
             else:
                 self.device = torch.device("cpu")
         else:
-            self.device = torch.device(device)
+            device_str = str(device)
+            if device_str.isdigit():
+                device_str = f"cuda:{device_str}"
+            self.device = torch.device(device_str)
 
         self.size = size
         self.nb_classes = nb_classes
